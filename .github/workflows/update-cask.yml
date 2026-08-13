@@ -48,3 +48,5 @@ jobs:
           git add Casks/claude-pet.rb
           git commit -m "claude-pet ${version}"
           git push
+
+# Registered with GitHub Actions on first push.
