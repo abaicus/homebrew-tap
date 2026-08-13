@@ -37,7 +37,11 @@ jobs:
             exit 0
           fi
 
-          if git diff --quiet -- Casks/claude-pet.rb; then
+          # Staged first, then compared: a cask that does not exist here yet is
+          # untracked, and `git diff` says nothing about untracked files — which
+          # reads as "already up to date" on the one run that matters most.
+          git add Casks/claude-pet.rb
+          if git diff --cached --quiet; then
             echo "cask is already up to date"
             exit 0
           fi
@@ -45,7 +49,6 @@ jobs:
           version=$(sed -n 's/^  version "\(.*\)"$/\1/p' Casks/claude-pet.rb)
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add Casks/claude-pet.rb
           git commit -m "claude-pet ${version}"
           git push
 
