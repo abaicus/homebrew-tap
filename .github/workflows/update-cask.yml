@@ -1,13 +1,13 @@
 name: Update cask
 
-# The pull half of a belt-and-braces pair. abaicus/claude-pet's release
-# workflow pushes the cask here directly, but only if a HOMEBREW_TAP_TOKEN is
+# The pull half of a belt-and-braces pair. abaicus/gogu's release workflow
+# pushes the cask here directly, but only if a HOMEBREW_TAP_TOKEN is
 # configured over there; this job needs no secret at all — the tap's own
 # GITHUB_TOKEN can write to the tap. If the push half is missing or its token
 # has expired, a release lands here within the hour instead of never.
 #
-# Both halves copy the same claude-pet.rb release asset, so they cannot
-# disagree about what the cask should say.
+# Both halves copy the same gogu.rb release asset, so they cannot disagree
+# about what the cask should say.
 
 on:
   schedule:
@@ -23,33 +23,45 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Copy the cask from the latest claude-pet release
+      - name: Copy the cask from the latest gogu release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          tag=$(gh release view --repo abaicus/claude-pet --json tagName -q .tagName)
+          tag=$(gh release view --repo abaicus/gogu --json tagName -q .tagName)
           echo "latest release: ${tag}"
 
-          if ! gh release download "$tag" --repo abaicus/claude-pet \
-                 --pattern claude-pet.rb --output Casks/claude-pet.rb --clobber; then
-            echo "::warning::${tag} has no claude-pet.rb asset — nothing to copy"
+          if ! gh release download "$tag" --repo abaicus/gogu \
+                 --pattern gogu.rb --output Casks/gogu.rb --clobber; then
+            echo "::warning::${tag} has no gogu.rb asset — nothing to copy"
             exit 0
           fi
 
           # Staged first, then compared: a cask that does not exist here yet is
           # untracked, and `git diff` says nothing about untracked files — which
           # reads as "already up to date" on the one run that matters most.
-          git add Casks/claude-pet.rb
+          git add Casks/gogu.rb
+
+          # The app was called claude-pet up to v0.1.0. Retire that token the
+          # moment a real gogu.rb lands — not before, or `brew` would follow the
+          # migration to a cask this tap does not have yet. Staged alongside the
+          # cask, so the comparison below sees the cleanup even on a run where
+          # gogu.rb itself is unchanged (the push half may have landed it first).
+          if [ -f Casks/claude-pet.rb ]; then
+            git rm -q -f Casks/claude-pet.rb
+            printf '{\n  "claude-pet": "abaicus/tap/gogu"\n}\n' > tap_migrations.json
+            git add tap_migrations.json
+          fi
+
           if git diff --cached --quiet; then
             echo "cask is already up to date"
             exit 0
           fi
 
-          version=$(sed -n 's/^  version "\(.*\)"$/\1/p' Casks/claude-pet.rb)
+          version=$(sed -n 's/^  version "\(.*\)"$/\1/p' Casks/gogu.rb)
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "claude-pet ${version}"
+          git commit -m "gogu ${version}"
           git push
 
 # Registered with GitHub Actions on first push.
