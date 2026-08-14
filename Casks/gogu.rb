@@ -1,9 +1,9 @@
 cask "gogu" do
   arch arm: "arm64", intel: "x64"
 
-  version "0.2.0"
-  sha256 arm:   "a25d0e9cfdfc71f3408bfd143c0e3ba3fd5542ec8d0797775ce2d1793749f8ad",
-         intel: "7c2f29d8d96341b39fe6eab35be7594fb29f6411c298cda1635059b165ab5d4f"
+  version "0.3.0"
+  sha256 arm:   "29c733a3cb511a3819126ea38e340536f278e523df2fc3906f8756d762774217",
+         intel: "07154544edc5e3fbd05e9d3e2843f01ed8bdda4d6b1526493c91349a936d8574"
 
   url "https://github.com/abaicus/gogu/releases/download/v#{version}/gogu-#{version}-#{arch}.zip"
   name "Gogu"
