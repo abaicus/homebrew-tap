@@ -1,11 +1,11 @@
 cask "gogu" do
   arch arm: "arm64", intel: "x64"
 
-  version "0.3.0"
-  sha256 arm:   "29c733a3cb511a3819126ea38e340536f278e523df2fc3906f8756d762774217",
-         intel: "07154544edc5e3fbd05e9d3e2843f01ed8bdda4d6b1526493c91349a936d8574"
+  version "0.3.1"
+  sha256 arm:   "efbccf6e84abbbebfe2e24491fdf5baf519057f70f96959ed3f91b3ddd53026c",
+         intel: "0e8af5233b58ae537d009a0208f759f19c58978c03a0efb148ab492582876af2"
 
-  url "https://github.com/abaicus/gogu/releases/download/v#{version}/gogu-#{version}-#{arch}.zip"
+  url "https://github.com/abaicus/gogu/releases/download/v#{version}/gogu-#{version}-#{arch}.dmg"
   name "Gogu"
   desc "Desktop tamagotchi that feeds on Claude Code activity"
   homepage "https://github.com/abaicus/gogu"
