@@ -32,7 +32,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
           # Each cask is named after its repo and shipped as <repo>.rb.
-          for cask in gogu voice-changer; do
+          for cask in gogu voice-changer da-i; do
             tag=$(gh release view --repo "abaicus/${cask}" --json tagName -q .tagName)
             echo "${cask}: latest release ${tag}"
 
