@@ -4,6 +4,7 @@ Homebrew casks for my apps.
 
 ```sh
 brew install --cask abaicus/tap/gogu
+brew install --cask abaicus/tap/voice-changer
 ```
 
 (`brew tap abaicus/tap` first is optional — installing by the full name taps it
@@ -14,6 +15,7 @@ for you.)
 | Cask | What it is |
 | --- | --- |
 | `gogu` | A desktop tamagotchi that feeds on Claude Code activity — [source](https://github.com/abaicus/gogu) |
+| `voice-changer` | A real-time voice changer for macOS that feeds a virtual microphone — [source](https://github.com/abaicus/voice-changer) |
 
 ## How the casks get updated
 

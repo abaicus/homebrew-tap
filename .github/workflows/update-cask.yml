@@ -1,12 +1,12 @@
 name: Update cask
 
-# The pull half of a belt-and-braces pair. abaicus/gogu's release workflow
-# pushes the cask here directly, but only if a HOMEBREW_TAP_TOKEN is
-# configured over there; this job needs no secret at all — the tap's own
-# GITHUB_TOKEN can write to the tap. If the push half is missing or its token
-# has expired, a release lands here within the hour instead of never.
+# The pull half of a belt-and-braces pair. An app's release workflow may push
+# its cask here directly, but only if it has a HOMEBREW_TAP_TOKEN configured;
+# this job needs no secret at all — the tap's own GITHUB_TOKEN can write to the
+# tap. If the push half is missing or its token has expired, a release lands
+# here within the hour instead of never.
 #
-# Both halves copy the same gogu.rb release asset, so they cannot disagree
+# Both halves copy the same <cask>.rb release asset, so they cannot disagree
 # about what the cask should say.
 
 on:
@@ -23,45 +23,36 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Copy the cask from the latest gogu release
+      - name: Copy each cask from its app's latest release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          tag=$(gh release view --repo abaicus/gogu --json tagName -q .tagName)
-          echo "latest release: ${tag}"
-
-          if ! gh release download "$tag" --repo abaicus/gogu \
-                 --pattern gogu.rb --output Casks/gogu.rb --clobber; then
-            echo "::warning::${tag} has no gogu.rb asset — nothing to copy"
-            exit 0
-          fi
-
-          # Staged first, then compared: a cask that does not exist here yet is
-          # untracked, and `git diff` says nothing about untracked files — which
-          # reads as "already up to date" on the one run that matters most.
-          git add Casks/gogu.rb
-
-          # The app was called claude-pet up to v0.1.0. Retire that token the
-          # moment a real gogu.rb lands — not before, or `brew` would follow the
-          # migration to a cask this tap does not have yet. Staged alongside the
-          # cask, so the comparison below sees the cleanup even on a run where
-          # gogu.rb itself is unchanged (the push half may have landed it first).
-          if [ -f Casks/claude-pet.rb ]; then
-            git rm -q -f Casks/claude-pet.rb
-            printf '{\n  "claude-pet": "abaicus/tap/gogu"\n}\n' > tap_migrations.json
-            git add tap_migrations.json
-          fi
-
-          if git diff --cached --quiet; then
-            echo "cask is already up to date"
-            exit 0
-          fi
-
-          version=$(sed -n 's/^  version "\(.*\)"$/\1/p' Casks/gogu.rb)
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "gogu ${version}"
+
+          # Each cask is named after its repo and shipped as <repo>.rb.
+          for cask in gogu voice-changer; do
+            tag=$(gh release view --repo "abaicus/${cask}" --json tagName -q .tagName)
+            echo "${cask}: latest release ${tag}"
+
+            if ! gh release download "$tag" --repo "abaicus/${cask}" \
+                   --pattern "${cask}.rb" --output "Casks/${cask}.rb" --clobber; then
+              echo "::warning::${cask} ${tag} has no ${cask}.rb asset — nothing to copy"
+              continue
+            fi
+
+            # Staged first, then compared: `git diff` says nothing about a
+            # cask that is still untracked here.
+            git add "Casks/${cask}.rb"
+            if git diff --cached --quiet; then
+              echo "${cask} is already up to date"
+              continue
+            fi
+
+            version=$(sed -n 's/^  version "\(.*\)"$/\1/p' "Casks/${cask}.rb")
+            git commit -m "${cask} ${version}"
+          done
           git push
 
 # Registered with GitHub Actions on first push.
