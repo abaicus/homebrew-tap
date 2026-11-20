@@ -1,10 +1,10 @@
 cask "da-i" do
-  version "3.0"
-  sha256 "920876b0fa25d99e6a260fc84f59564d8f0affef55bdd702a993160266929f40"
+  version "3.1"
+  sha256 "e1504467c19cef5d6753e6023a5b7e2007062973126176017cb11e130b6375c1"
 
   url "https://github.com/abaicus/da-i/releases/download/v#{version}/Da-i-#{version}.dmg"
   name "Dă-i"
-  desc "Menu-bar utility for faster Space switching, Smart Zoom and keep-awake"
+  desc "Menu-bar utility for faster Space switching, Smart Zoom, keep-awake and input lock"
   homepage "https://github.com/abaicus/da-i"
 
   livecheck do
@@ -29,7 +29,7 @@ cask "da-i" do
   zap trash: "~/Library/Preferences/local.da-i.app.plist"
 
   caveats <<~EOS
-    Dă-i needs Accessibility permission for Space Switching and Smart Zoom:
+    Dă-i needs Accessibility permission for Space Switching, Smart Zoom and Input Lock:
     System Settings → Privacy & Security → Accessibility.
 
     The build is ad-hoc signed, so macOS ties that permission to the exact
